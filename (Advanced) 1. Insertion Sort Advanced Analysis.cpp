@@ -20,34 +20,46 @@ vector<string> split(const string &);
  * The function is expected to return an INTEGER.
  * The function accepts INTEGER_ARRAY arr as parameter.
  */
-unsigned long int insertionSort(vector<int>& arr) {
-    vector<int> a, c;
-    int asize=arr.size();
-    for (int i=0; i<asize; i++){
-        a.push_back(arr[i]);
-        //c.push_back(arr[i]);
-    }
-    sort(a.begin(), a.end());
-    
-    unsigned long int res, temp=0;
-    if (asize!=1){
-        if (a[0]==arr[0]){
-            arr.erase(arr.begin());
-            temp+=insertionSort(arr);              
-        } else {
-            for (int i=1; i<asize; i++){
-                if (a[0]==arr[i]){
-                    arr.erase(arr.begin()+i);
-                    temp+=i+insertionSort(arr);
-                    break;
-                }
-            }
-        }
-    }  
-    
-    res=temp;
-    return res;
 
+unsigned long int insertionSort(vector<int>& arr, vector<int>& b, int l, int r) {
+    unsigned long int res=0;
+    if(r-l <= 1){
+        return res;
+    }
+    
+    int h, h1, h2, temp; 
+    //median
+    h = (l+r)/2;
+    //first half limit
+    h1 = h-1;
+    //last half limit
+    h2 = r-1;
+    temp = h2;
+    
+    //repetitive function    
+    res += insertionSort(b, arr, l, h)+insertionSort(b, arr, h, r);
+
+    //Checking the range
+    while (h1>=l && h2>=h) {
+        //
+        if(arr[h2] >= arr[h1]){
+            b[temp--] = arr[h2--];    
+        } else {
+            //Counting total shifts
+            res += h2-h+1;
+            b[temp--] = arr[h1--];
+        }
+    } 
+    
+    while(h1 >= l){
+        b[temp--] = arr[h1--];
+    }
+    
+    while(h2 >= h){
+        b[temp--] = arr[h2--];
+    }
+    
+    return res;
 }
 
 int main()
@@ -78,7 +90,9 @@ int main()
             arr[i] = arr_item;
         }
 
-        unsigned long int result = insertionSort(arr);
+        vector<int> b(arr);
+        
+        long long result = insertionSort(arr, b, 0, n);
 
         fout << result << "\n";
     }
@@ -126,3 +140,4 @@ vector<string> split(const string &str) {
 
     return tokens;
 }
+
